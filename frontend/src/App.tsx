@@ -1,22 +1,39 @@
+import { useState } from "react";
 import useSWR from "swr";
-import { fetchTodos } from "./api";
+import { fetchTodos, createTodo } from "./api";
 
 export default function App() {
-  const { data: todos, isLoading } = useSWR("todos", fetchTodos);
+  const { data: todos, isLoading, mutate } = useSWR("todos", fetchTodos);
+  const [title, setTitle] = useState("");
 
-  if (isLoading) {
-    return <p>Loading todos.</p>;
-  }
-
-  if (!todos || todos.length === 0) {
-    return <p>No todos yet.</p>;
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await createTodo(title);
+    setTitle("");
+    await mutate();
   }
 
   return (
     <main>
       <h1>Todos</h1>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
+        <button type="submit" disabled={title.trim() === ""}>
+          Add
+        </button>
+      </form>
+
+      {isLoading && <p>Loading todos.</p>}
+
+      {!isLoading && (!todos || todos.length === 0) && <p>No todos yet.</p>}
+
       <ul>
-        {todos.map((todo) => (
+        {todos?.map((todo) => (
           <li key={todo.id}>
             <input type="checkbox" checked={todo.done} readOnly />
             <span className={todo.done ? "done" : ""}>{todo.title}</span>
