@@ -49,7 +49,9 @@ export default function TodoEdit({ todo, onToggle, onSave }: TodoEditProps) {
         checked={todo.done}
         onChange={() => onToggle(todo)}
       />
-      <span className={todo.done ? "done" : ""}>{todo.title}</span>
+      <span className={todo.done ? "todo-title done" : "todo-title"}>
+        {todo.title}
+      </span>
       <button type="button" onClick={() => setIsEditing(true)}>
         Edit
       </button>
