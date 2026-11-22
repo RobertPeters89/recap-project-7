@@ -12,6 +12,19 @@ todosRouter.post("/", async (request, response) => {
   const todo = await todoModel.create({ title: request.body?.title });
   response.status(201).json(toTodo(todo));
 });
+
+todosRouter.put("/:id", async (request, response) => {
+  const todo = await todoModel.findByIdAndUpdate(
+    request.params.id,
+    { title: request.body?.title, done: request.body?.done },
+    { returnDocument: "after", runValidators: true },
+  );
+  if (!todo) {
+    response.status(404).json({ error: "Todo not found" });
+    return;
+  }
+  response.json(toTodo(todo));
+});
 // Issue 2: add the routes here. The router is already mounted on /api/todos in app.ts.
 //
 // GET    /api/todos       -> 200 with the list of todos
@@ -20,5 +33,3 @@ todosRouter.post("/", async (request, response) => {
 // DELETE /api/todos/:id   -> 204 without a body, 404 for an unknown id
 //
 // The contract is in docs/api-contract.md at the root of the project.
-
-
