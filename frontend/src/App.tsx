@@ -2,6 +2,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import { fetchTodos, createTodo, updateTodo } from "./api";
 import { Todo } from "./types";
+import TodoEdit from "./TodoEdit";
 
 export default function App() {
   const { data: todos, isLoading, mutate } = useSWR("todos", fetchTodos);
@@ -16,6 +17,11 @@ export default function App() {
 
   async function handleToggle(todo: Todo) {
     await updateTodo({ ...todo, done: !todo.done });
+    await mutate();
+  }
+
+  async function handleSave(todo: Todo, title: string) {
+    await updateTodo({...todo, title});
     await mutate();
   }
 
@@ -40,14 +46,7 @@ export default function App() {
 
       <ul>
         {todos?.map((todo) => (
-          <li key={todo.id}>
-            <input
-              type="checkbox"
-              checked={todo.done}
-              onChange={() => handleToggle(todo)}
-            />
-            <span className={todo.done ? "done" : ""}>{todo.title}</span>
-          </li>
+          <TodoEdit key={todo.id} todo={todo} onToggle={handleToggle} onSave={handleSave}/>
         ))}
       </ul>
     </main>
