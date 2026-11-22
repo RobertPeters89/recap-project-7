@@ -35,6 +35,14 @@ export async function updateTodo(todo: Todo): Promise<Todo> {
   return response.json();
 }
 
+export async function deleteTodo(id: string): Promise<void> {
+  const response = await fetch(`${API_URL}/todos/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error("Could not delete the todo");
+  }
+}
 // updateTodo(todo: Todo): Die Funktion bekommt ein ganzes Todo-Objekt mit id, title und done. Sie enthält schon die neuen Werte, z. B. done: true.
 // `${API_URL}/todos/${todo.id}`: Die URL wird zusammengesetzt, z. B. http://localhost:3001/api/todos/6aff.... Das ist dasselbe, was du vorhin in Bruno getippt hast.
 // method: "PUT": Das ist die HTTP-Methode für "ersetze dieses Todo".
