@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useSWR from "swr";
-import { fetchTodos, createTodo, updateTodo } from "./api";
+import { fetchTodos, createTodo, updateTodo, deleteTodo } from "./api";
 import { Todo } from "./types";
 import TodoEdit from "./TodoEdit";
 
@@ -21,7 +21,12 @@ export default function App() {
   }
 
   async function handleSave(todo: Todo, title: string) {
-    await updateTodo({...todo, title});
+    await updateTodo({ ...todo, title });
+    await mutate();
+  }
+
+  async function handleDelete(todo: Todo) {
+    await deleteTodo(todo.id);
     await mutate();
   }
 
@@ -46,7 +51,13 @@ export default function App() {
 
       <ul>
         {todos?.map((todo) => (
-          <TodoEdit key={todo.id} todo={todo} onToggle={handleToggle} onSave={handleSave}/>
+          <TodoEdit
+            key={todo.id}
+            todo={todo}
+            onToggle={handleToggle}
+            onSave={handleSave}
+            onDelete={handleDelete}
+          />
         ))}
       </ul>
     </main>

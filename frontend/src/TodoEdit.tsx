@@ -5,9 +5,15 @@ type TodoEditProps = {
   todo: Todo;
   onToggle: (todo: Todo) => void;
   onSave: (todo: Todo, title: string) => Promise<void>;
+  onDelete: (todo: Todo) => void;
 };
 
-export default function TodoEdit({ todo, onToggle, onSave }: TodoEditProps) {
+export default function TodoEdit({
+  todo,
+  onToggle,
+  onSave,
+  onDelete,
+}: TodoEditProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(todo.title);
 
@@ -54,6 +60,9 @@ export default function TodoEdit({ todo, onToggle, onSave }: TodoEditProps) {
       </span>
       <button type="button" onClick={() => setIsEditing(true)}>
         Edit
+      </button>
+      <button type="button" onClick={() => onDelete(todo)}>
+        Delete
       </button>
     </li>
   );

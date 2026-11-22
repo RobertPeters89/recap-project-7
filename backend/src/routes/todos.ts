@@ -25,6 +25,15 @@ todosRouter.put("/:id", async (request, response) => {
   }
   response.json(toTodo(todo));
 });
+
+todosRouter.delete("/:id", async (request, response) => {
+  const todo = await todoModel.findByIdAndDelete(request.params.id);
+  if (!todo) {
+    response.status(404).json({ error: "Todo not found" });
+    return;
+  }
+  response.status(204).send();
+});
 // Issue 2: add the routes here. The router is already mounted on /api/todos in app.ts.
 //
 // GET    /api/todos       -> 200 with the list of todos
