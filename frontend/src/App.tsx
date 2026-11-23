@@ -5,19 +5,38 @@ import { Todo } from "./types";
 import TodoEdit from "./TodoEdit";
 
 export default function App() {
-  const { data: todos, isLoading, mutate } = useSWR("todos", fetchTodos);
+  const { data: todos, error, isLoading, mutate } = useSWR("todos", fetchTodos);
   const [title, setTitle] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    await createTodo(title);
-    setTitle("");
-    await mutate();
+    setActionError("");
+    setIsSubmitting(true);
+    try {
+      await createTodo(title);
+      setTitle("");
+      await mutate();
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : "Something went wrong",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   async function handleToggle(todo: Todo) {
-    await updateTodo({ ...todo, done: !todo.done });
-    await mutate();
+    setActionError("");
+    try {
+      await updateTodo({ ...todo, done: !todo.done });
+      await mutate();
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : "Something went wrong",
+      );
+    }
   }
 
   async function handleSave(todo: Todo, title: string) {
@@ -26,8 +45,15 @@ export default function App() {
   }
 
   async function handleDelete(todo: Todo) {
-    await deleteTodo(todo.id);
-    await mutate();
+    setActionError("");
+    try {
+      await deleteTodo(todo.id);
+      await mutate();
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : "Something went wrong",
+      );
+    }
   }
 
   return (
@@ -40,26 +66,41 @@ export default function App() {
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />
-        <button type="submit" disabled={title.trim() === ""}>
+        <button type="submit" disabled={title.trim() === "" || isSubmitting}>
           Add
         </button>
       </form>
 
+      {actionError && <p role="alert">{actionError}</p>}
+
       {isLoading && <p>Loading todos.</p>}
 
-      {!isLoading && (!todos || todos.length === 0) && <p>No todos yet.</p>}
+      {error ? (
+        <div>
+          <p>{error.message}</p>
+          <button type="button" onClick={() => mutate()}>
+            Try again
+          </button>
+        </div>
+      ) : (
+        <>
+          {!isLoading && todos?.length === 0 && (
+            <p>No todos yet. Add your first todo above.</p>
+          )}
 
-      <ul>
-        {todos?.map((todo) => (
-          <TodoEdit
-            key={todo.id}
-            todo={todo}
-            onToggle={handleToggle}
-            onSave={handleSave}
-            onDelete={handleDelete}
-          />
-        ))}
-      </ul>
+          <ul>
+            {todos?.map((todo) => (
+              <TodoEdit
+                key={todo.id}
+                todo={todo}
+                onToggle={handleToggle}
+                onSave={handleSave}
+                onDelete={handleDelete}
+              />
+            ))}
+          </ul>
+        </>
+      )}
     </main>
   );
 }

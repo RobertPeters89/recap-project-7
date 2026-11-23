@@ -16,15 +16,22 @@ export default function TodoEdit({
 }: TodoEditProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(todo.title);
+  const [saveError, setSaveError] = useState("");
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    await onSave(todo, title);
-    setIsEditing(false);
+    setSaveError("");
+    try {
+      await onSave(todo, title);
+      setIsEditing(false);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Something went wrong");
+    }
   }
 
   function handleCancel() {
     setTitle(todo.title);
+    setSaveError("");
     setIsEditing(false);
   }
 
@@ -44,6 +51,7 @@ export default function TodoEdit({
             Cancel
           </button>
         </form>
+        {saveError && <p role="alert">{saveError}</p>}
       </li>
     );
   }
