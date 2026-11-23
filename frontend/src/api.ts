@@ -3,10 +3,24 @@ import type { Todo } from "./types";
 
 export const API_URL = "http://localhost:3001/api";
 
+async function getErrorMessage(
+  response: Response,
+  fallback: string,
+): Promise<string> {
+  try {
+    const body: { error?: string } = await response.json();
+    return body.error ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export async function fetchTodos(): Promise<Todo[]> {
   const response = await fetch(`${API_URL}/todos`);
   if (!response.ok) {
-    throw new Error("Could not load the todos");
+    throw new Error(
+      await getErrorMessage(response, "Could not load the todos"),
+    );
   }
   return response.json();
 }
@@ -18,7 +32,7 @@ export async function createTodo(title: string): Promise<Todo> {
     body: JSON.stringify({ title }),
   });
   if (!response.ok) {
-    throw new Error("Could not add the todo");
+    throw new Error(await getErrorMessage(response, "Could not add the todo"));
   }
   return response.json();
 }
@@ -30,7 +44,9 @@ export async function updateTodo(todo: Todo): Promise<Todo> {
     body: JSON.stringify({ title: todo.title, done: todo.done }),
   });
   if (!response.ok) {
-    throw new Error("Could not update the todo");
+    throw new Error(
+      await getErrorMessage(response, "Could not update the todo"),
+    );
   }
   return response.json();
 }
@@ -40,7 +56,9 @@ export async function deleteTodo(id: string): Promise<void> {
     method: "DELETE",
   });
   if (!response.ok) {
-    throw new Error("Could not delete the todo");
+    throw new Error(
+      await getErrorMessage(response, "Could not delete the todo"),
+    );
   }
 }
 // updateTodo(todo: Todo): Die Funktion bekommt ein ganzes Todo-Objekt mit id, title und done. Sie enthält schon die neuen Werte, z. B. done: true.
