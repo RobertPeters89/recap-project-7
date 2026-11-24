@@ -60,7 +60,7 @@ export default function App() {
     <main>
       <h1>Todos</h1>
 
-      <form onSubmit={handleSubmit}>
+      <form className="todo-form" onSubmit={handleSubmit}>
         <input
           type="text"
           value={title}
@@ -88,7 +88,7 @@ export default function App() {
             <p>No todos yet. Add your first todo above.</p>
           )}
 
-          <ul>
+          <ul className="todo-list">
             {todos?.map((todo) => (
               <TodoEdit
                 key={todo.id}
