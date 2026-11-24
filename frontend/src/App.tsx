@@ -85,7 +85,7 @@ export default function App() {
       ) : (
         <>
           {!isLoading && todos?.length === 0 && (
-            <p>No todos yet. Add your first todo above.</p>
+            <p>No todos yet.</p>
           )}
 
           <ul className="todo-list">
