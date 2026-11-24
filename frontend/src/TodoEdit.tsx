@@ -37,8 +37,8 @@ export default function TodoEdit({
 
   if (isEditing) {
     return (
-      <li>
-        <form onSubmit={handleSubmit}>
+      <li className="todo-item">
+        <form className="todo-form" onSubmit={handleSubmit}>
           <input
             type="text"
             value={title}
@@ -57,7 +57,7 @@ export default function TodoEdit({
   }
 
   return (
-    <li>
+    <li className="todo-item">
       <input
         type="checkbox"
         checked={todo.done}
