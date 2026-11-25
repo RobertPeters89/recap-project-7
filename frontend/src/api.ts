@@ -1,7 +1,8 @@
 // The backend allows requests from http://localhost:5173 (CORS), so the frontend can call it directly.
 import type { Todo } from "./types";
 
-export const API_URL = "http://localhost:3001/api";
+export const API_URL: string =
+  import.meta.env.VITE_API_URL ?? "http://localhost:3001/api";
 
 async function getErrorMessage(
   response: Response,
